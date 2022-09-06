@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Facelet Title</title>
+        <f:event listener="#{EmpleadoC.listar()}" type="preRenderView" />
+    </h:head>
+    <h:body >
+        <p:growl id="mensaje" severity="info, fatal" showDetail="true" showSummary="true" />
+        <p:growl id="growl-sticky" for="sticky-key" showDetail="true" showSummary="true" />
+        <p:menubar>
+            <p:submenu label="tablas maestras">
+                <p:menuitem value="cliente" outcome="Cliente"/>
+                <p:menuitem value="repuesto" outcome="Repuestos"/>
+                <p:menuitem value="Empleado" outcome="Empleado"/>
+                <p:menuitem value="Motos" outcome="Motos"/>
+                <p:menuitem value="Venta" outcome="Venta"/>
+                <p:menuitem value="Compra" outcome="Compra"/>
+                <p:menuitem value="Proveedor" outcome="Proveedor"/>
+
+            </p:submenu> 
+        </p:menubar>
+
+        <center>
+            <h1> Registro de Empleados</h1>
+        </center>
+        <center>    
+            <h:form id="ranger"> 
+                <p:panelGrid >
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Nombre" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{EmpleadoC.emp.NOMEMP}"  id="nombre" 
+                                         required="true" requiredMessage="falta nombre">
+                                <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                                <p:tooltip for="nombre" value="Ingrese sus nombres" trackMouse="focus"/>
+                            </p:inputText>
+                            <p:message id="msgNombres" for="nombre" display="text" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+
+                            <p:outputLabel value="Apellido" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{EmpleadoC.emp.APEEMP}" id="apellido"  maxlength="30" 
+                                         required="true" requiredMessage="apellido">
+                                <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                                <p:tooltip for="apellido" value="Ingrese sus apellido" trackMouse="focus"/>
+
+                            </p:inputText>
+                            <p:message id="msgApellidos" for="apellido" display="text" /> 
+                        </p:column>
+
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Email" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{EmpleadoC.emp.EMAILEMP}" id="email" 
+                                         required="true" requiredMessage="se requiere gmail"/>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Celular" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{EmpleadoC.emp.CELEMP}"
+                                         required="true" requiredMessage="falta celular"
+                                         maxlength="9" id="celular">               
+                                <p:keyFilter regEx="/[0-9]/"/>            
+                                <p:tooltip for="celular" value="Ingresar # Teléfonico" trackMouse="focus"/>    
+
+                            </p:inputText>
+                            <p:message id="msCelular" for="celular"/>
+                        </p:column>
+
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="FECHA DE REGISTRO" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{EmpleadoC.emp.FEHCREGEMP}" 
+                                         required="true" requiredMessage="Falta DNI">           
+                                <p:tooltip for="DNI" value="colocar tu DNI" trackMouse="focus"/>     
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Documento de I" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{EmpleadoC.emp.DOCEMP}" 
+                                         required="true" requiredMessage="Falta DNI"
+                                         maxlength="8" id="DNI">
+                                <p:keyFilter regEx="/[0-8]/"/>                 
+                                <p:tooltip for="DNI" value="colocar tu DNI" trackMouse="focus"/>     
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+
+
+                </p:panelGrid>
+            </h:form >
+            <p:commandButton value="Registrar" actionListener="#{EmpleadoC.registrar()}" update=":Mostrarempleado:tablaemp mensaje"/>
+            <p:commandButton value="Limpiar" actionListener="#{EmpleadoC.limpiar()}" update=":ranger"/>
+            <h:form >
+                <center>
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/pdf.png" width="50px"/>
+                        <p:dataExporter type="pdf" target=":Mostrarempleado:tablaemp" fileName="Listado de proveedor" />
+                    </h:commandLink> 
+
+
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/exel.png" width="50px"/>
+                        <p:dataExporter type="xls" target=":Mostrarempleado:tablaemp" fileName="Listado de proveedor" />
+                    </h:commandLink>
+                    <p:commandButton value="Exportar Clientes" icon="fa fa-fx fa-dowload" styleClass="" ajax="false"
+                                     style="float:right; background-color: yellowgreen" actionListener="#{EmpleadoC.reporteEmpleado()}"
+                                     onclick="this.form.target = '_blank'" title="Relacion de Clientes"
+                                     />
+                </center>
+            </h:form>
+            <h:form id="Mostrarempleado">
+                <p:dataTable var="tblemp" id="tablaemp" value="#{EmpleadoC.listadoEmp}" rows="5" 
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="1,5,{ShowAll|'All'}" >
+                    <p:column headerText="ID" >
+                        <h:outputText value="#{tblemp.IDEMP}"  />
+                    </p:column>  
+                    <p:column headerText="nombre" >
+                        <h:outputText value="#{tblemp.NOMEMP}"  />
+                    </p:column>    
+                    <p:column headerText="apellido" >
+                        <h:outputText value="#{tblemp.APEEMP}"  />
+                    </p:column>  
+                    <p:column headerText="email" >
+                        <h:outputText value="#{tblemp.EMAILEMP}"  />
+                    </p:column>  
+                    <p:column headerText="Celular" >
+                        <h:outputText value="#{tblemp.CELEMP}"  />
+                    </p:column>  
+
+                    <p:outputLabel value="Fecha de registro" for="fecha" />
+                    <p:calendar id="fecha" value="#{EmpleadoC.emp.FEHCREGEMP}" 
+                                yearRange="c:c" pattern="dd-MM-yyyy" navigator="true" maxdate="@now" mindate="@now" size="20" showOn="button"
+                                required="true" requiredMessage="Ingrese la fecha">
+                    </p:calendar>
+
+                    <p:column headerText="dni" >
+                        <h:outputText value="#{tblemp.DOCEMP}"  />
+                    </p:column> 
+
+                    <p:column headerText="Modificar">
+                        <p:commandButton icon="ui-icon-pencil" oncomplete="PF('wdlgDatos').show();" update=":formModificar" >
+                            <f:setPropertyActionListener value="#{tblemp}" target="#{EmpleadoC.emp}" />
+                        </p:commandButton>
+
+                    </p:column> 
+                    <p:column style="width: 100px" headerText="Eliminar">
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{EmpleadoC.eliminar(tblemp)}" update="tablaemp"  >
+                            <p:confirm header="Confirmación" message="¿Desea Eliminar?" icon="ui-icon-alert"/>
+                            <p:tooltip trackMouse="true"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                        </p:confirmDialog>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog header="Datos del Empleado" widgetVar="wdlgDatos" id="dlgDatos">
+                <h:form id="formModificar">
+                    <p:panelGrid >
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Nombre" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{EmpleadoC.emp.NOMEMP}"  id="nombre" 
+                                             required="true" requiredMessage="falta nombre">
+                                    <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                                    <p:tooltip for="nombre" value="Ingrese sus nombres" trackMouse="focus"/>
+                                </p:inputText>
+                                <p:message id="msgNombres" for="nombre" display="text" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+
+                                <p:outputLabel value="Apellido" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{EmpleadoC.emp.APEEMP}" id="apellido"  maxlength="30" 
+                                             required="true" requiredMessage="apellido">
+                                    <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                                    <p:tooltip for="apellido" value="Ingrese sus apellido" trackMouse="focus"/>
+
+                                </p:inputText>
+                                <p:message id="msgApellidos" for="apellido" display="text" /> 
+                            </p:column>
+
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Email" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{EmpleadoC.emp.EMAILEMP}" id="email" 
+                                             required="true" requiredMessage="se requiere gmail"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Celular" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{EmpleadoC.emp.CELEMP}"
+                                             required="true" requiredMessage="falta celular"
+                                             maxlength="9" id="celular">               
+                                    <p:keyFilter regEx="/[0-9]/"/>            
+                                    <p:tooltip for="celular" value="Ingresar # Teléfonico" trackMouse="focus"/>    
+
+                                </p:inputText>
+                                <p:message id="msCelular" for="celular"/>
+                            </p:column>
+
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="FECHA DE REGISTRO" />
+                            </p:column>
+                            <p:column>
+                                <p:calendar style="width: 260px" placeholder="dia-mes-año" mask="true"
+                                            value="#{EmpleadoC.emp.FEHCREGEMP}"
+                                            navigator="true" yearRange="c-100:c" pattern="dd-MM-yyyy"
+                                            required="true" maxdate="today" showButtonPanel="true"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Documento de I" />
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{EmpleadoC.emp.DOCEMP}" 
+                                             required="true" requiredMessage="Falta DNI"
+                                             maxlength="8" id="DNI">
+                                    <p:keyFilter regEx="/[0-8]/"/>                 
+                                    <p:tooltip for="DNI" value="colocar tu DNI" trackMouse="focus"/>     
+                                </p:inputText>
+                            </p:column>
+                        </p:row>
+
+
+                    </p:panelGrid>
+                    <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('wdlgDatos').hide();" actionListener="#{EmpleadoC.limpiar()}" />
+                    <p:commandButton id="modicardialog" value="Modificar" actionListener="#{EmpleadoC.modificar()}" 
+                                     update="formModificar :Mostrarempleado:tablaemp" 
+                                     oncomplete="if(!args.validationFailed)PF('wdlgDatos').hide();"/>
+
+                </h:form>
+            </p:dialog>
+        </center>
+    </h:body>
+</html>

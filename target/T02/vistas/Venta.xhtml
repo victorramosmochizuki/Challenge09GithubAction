@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Facelet Title</title>
+        <f:event listener="#{VentaC.listar()}" type="preRenderView" />
+
+    </h:head>
+    <h:body >
+        <p:growl id="mensaje" severity="info, fatal" showDetail="true" showSummary="true" />
+        <p:growl id="growl-sticky" for="sticky-key" showDetail="true" showSummary="true" />
+        <p:menubar>
+            <p:submenu label="tablas maestras">
+                <p:menuitem value="cliente" outcome="Cliente"/>
+                <p:menuitem value="repuesto" outcome="Repuestos"/>
+                <p:menuitem value="Empleado" outcome="Empleado"/>
+                <p:menuitem value="Motos" outcome="Motos"/>
+                <p:menuitem value="Venta" outcome="Venta"/>
+                <p:menuitem value="Compra" outcome="Compra"/>
+                <p:menuitem value="Proveedor" outcome="Proveedor"/>
+            </p:submenu> 
+        </p:menubar>
+        <center>
+            <h1> Registro de Venta</h1>
+        </center>
+
+
+        <center>
+
+            <h:form id="formFactura">
+
+                <p:panelGrid columns="4" id="Factura">
+                    <p:outputLabel value="DNI" />
+
+                    <p:commandButton value="Buscar" action="#{VentaC.Filtrado()}" update="txtApellido txtDireccion txtCelular">
+                        <p:inputText id="Nombre" value="#{VentaC.cli.docclie}" maxlength="8"/>
+                    </p:commandButton>
+
+                    <p:outputLabel value="Nombre del producto"/>
+                    <p:commandButton value="Mostrar" action="#{VentaC.ojalafuncione()}" update="txtStock txtPrecio">
+                        <p:autoComplete id="AutocompletarProducto" value="#{VentaC.mot.MODMOT}" completeMethod="#{VentaC.autocompletePrueba}" immediate="true" />
+
+                    </p:commandButton>
+
+
+
+                    <p:outputLabel value="Apellido y Nombre"/>
+                    <p:outputLabel id="txtApellido" value="#{VentaC.cli.apeclie}, #{VentaC.cli.nomclie}"/>
+
+
+                    <p:outputLabel value="Stock disponible"/>
+                    <p:outputLabel id="txtStock" value="#{VentaC.mot.STOCK}" />
+                    <p:outputLabel value="Gmail"/>
+                    <p:outputLabel id="txtDireccion" value="#{VentaC.cli.emaclie}"/>
+                    <p:outputLabel  value="Precio"/>
+                    <p:outputLabel id="txtPrecio" value="#{VentaC.mot.PREVENMOT}"/>
+                    <p:outputLabel value="Celular"/>
+                    <p:outputLabel id="txtCelular" value="#{VentaC.cli.celclie}"/>
+                    <p:outputLabel value="Cantidad Deseada"/>
+                    <p:inputText id="cantidad" value="#{VentaC.mot.CANMOT}"/>
+                    <p:outputLabel for="button" value="Fecha" />
+                    <p:calendar id="button"  value="#{VentaC.venta.FECVEN}"/>
+                    <p:outputLabel value="Tipo de pago"/>
+                    <p:selectOneMenu id="tipo_de_pago"
+                                     styleClass="ticket"
+                                     style=" width: 225px" value="#{VentaC.venta.FOR_PAG}">
+
+                        <f:selectItem noSelectionOption="true"
+                                      itemLabel="Seleccionar" />
+                        <f:selectItem noSelectionOption="true"
+                                      itemLabel="Efectivo" itemValue="Efectivo"/>
+                        <f:selectItem noSelectionOption="true"
+                                      itemLabel="Tarjeta" itemValue="Tarjeta" />
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <p:spacer height="30 px"/>
+
+            </h:form>
+
+
+
+
+
+
+
+            <p:commandButton value="Registrar" actionListener="#{VentaC.registrar()}" update="formFactura:Factura MostrarVenta:TabalaAgragar MostrarVenta:total mensaje"/>
+            <p:commandButton value="Limpiar" actionListener="#{VentaC.limpiar()}" update="formFactura:Factura  MostrarVenta:total  mensaje"/>
+            <p:commandButton value="Agregar" actionListener="#{VentaC.manuel()}" update="MostrarVenta:TabalaAgragar MostrarVenta:total mensaje"/>
+            <!--            <p:commandButton value="REgistar VentaDetalle" actionListener="{VentaC.registrarDetalle()}"/>-->
+
+
+
+            <h:form id="MostrarVenta">
+                <p:dataTable value="#{VentaC.listaVB}" id="TabalaAgragar" var="tblagragar">
+                    <p:column headerText="ID motos" >
+                        <h:outputText value="#{tblagragar.IDMOT}"  />
+                    </p:column>  
+                    <p:column headerText="Cantidad" >
+                        <h:outputText value="#{tblagragar.CANTVENDET}"  />
+                    </p:column>
+                    <p:column headerText="subtotal" >
+                        <h:outputText value="#{tblagragar.subtotal}"  />
+                    </p:column> 
+                </p:dataTable>
+
+
+                <br/>
+                <br/>
+                <p:dataTable var="tblven" id="tablventa" value="#{VentaC.lstVenta}" rows="5" 
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="1,5,{ShowAll|'All'}" >
+                    <p:column headerText="ID venta" >
+                        <h:outputText value="#{tblven.IDVEN}"  />
+                    </p:column>  
+                    <p:column headerText="ID cliente." >
+                        <h:outputText value="#{tblven.IDCLI}"  />
+                    </p:column>    
+                    <p:column headerText="ID empleado" >
+                        <h:outputText value="#{tblven.IDEMP}"  />
+                    </p:column>  
+                    <p:column headerText="fecha de venta" >
+                        <h:outputText value="#{tblven.FECVEN}"  />
+                    </p:column>  
+                    <p:column headerText="froma de pago" >
+                        <h:outputText value="#{tblven.FOR_PAG}"  />
+                    </p:column>
+
+                </p:dataTable>
+                <h:outputText value="total"/>
+                <h:outputText id="total" value="#{VentaC.total}"/>
+                <p:spacer width="40 px"/>
+
+
+
+
+
+            </h:form>
+
+
+        </center>
+    </h:body>
+</html>

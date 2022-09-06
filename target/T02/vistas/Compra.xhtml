@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Facelet Title</title>
+        <f:event listener="#{CompraC.listar()}" type="preRenderView" />
+
+    </h:head>
+    <h:body >
+        <p:growl id="mensaje" severity="info, fatal" showDetail="true" showSummary="true" />
+        <p:growl id="growl-sticky" for="sticky-key" showDetail="true" showSummary="true" />
+        <p:menubar>
+            <p:submenu label="tablas maestras">
+                <p:menuitem value="cliente" outcome="Cliente"/>
+                <p:menuitem value="repuesto" outcome="Repuestos"/>
+                <p:menuitem value="Empleado" outcome="Empleado"/>
+                <p:menuitem value="Motos" outcome="Motos"/>
+                <p:menuitem value="Venta" outcome="Venta"/>
+                <p:menuitem value="Compra" outcome="Compra"/>
+                <p:menuitem value="Proveedor" outcome="Proveedor"/>
+            </p:submenu> 
+        </p:menubar>
+
+        <center>
+            <h1> Registro de Compra</h1>
+        </center>
+
+
+        <center>
+
+            <h:form id="formFactura">
+
+                <p:panelGrid columns="4" id="Factura">
+                    <p:outputLabel value="RUC" />
+
+                    <p:commandButton value="Buscar" action="#{CompraC.Filtrado()}" update="txtApellido txtDireccion txtCelular">
+                        <p:inputText id="Nombre" value="#{CompraC.pro.RUCPRO}" maxlength="11"/>
+                    </p:commandButton>
+
+                    <p:outputLabel value="Nombre del producto"/>
+                    <p:commandButton value="Mostrar" action="#{CompraC.ojalafuncione()}" update="txtStock txtPrecio">
+                        <p:autoComplete id="AutocompletarProducto" value="#{CompraC.mot.MODMOT}" completeMethod="#{CompraC.autocompletePrueba}" immediate="true" />
+
+                    </p:commandButton>
+
+
+
+                    <p:outputLabel value="Nombre"/>
+                    <p:outputLabel id="txtApellido" value="#{CompraC.pro.NOMPRO}"/>
+
+
+                    <p:outputLabel value="Stock disponible"/>
+                    <p:outputLabel id="txtStock" value="#{CompraC.mot.STOCK}" />
+                    <p:outputLabel value="Dirección"/>
+                    <p:outputLabel id="txtDireccion" value="#{CompraC.pro.DIRPRO}"/>                    
+                    <p:outputLabel  value="Precio"/>
+                    <p:outputLabel id="txtPrecio" value="#{CompraC.mot.PREVENMOT}"/>
+                    <p:outputLabel value="Provincia"/>
+                    <p:outputLabel id="txtProvincia" value="#{CompraC.pro.PROPRO}"/>                    
+                    <p:outputLabel value="Cantidad Deseada"/>
+                    <p:inputText id="cantidad" value="#{CompraC.mot.CANMOT}"/>
+                    <p:outputLabel value="Celular"/>
+                    <p:outputLabel id="txtCelular" value="#{CompraC.pro.CELPRO}"/>                  
+                    <p:outputLabel value="Tipo de pago"/>
+                    <p:selectOneMenu id="tipo_de_pago"
+                                     styleClass="ticket"
+                                     style=" width: 225px" value="#{CompraC.compra.FOR_PAG}">
+
+                        <f:selectItem noSelectionOption="true"
+                                      itemLabel="Seleccionar" />
+                        <f:selectItem noSelectionOption="true"
+                                      itemLabel="Efectivo" itemValue="Efectivo"/>
+                        <f:selectItem noSelectionOption="true"
+                                      itemLabel="Tarjeta" itemValue="Tarjeta" />
+                    </p:selectOneMenu>
+                    <p:outputLabel for="button" value="Fecha" />
+                    <p:calendar id="button" value="#{CompraC.compra.FECCOM}"/>
+                </p:panelGrid>
+                <p:spacer height="30 px"/>
+
+            </h:form>
+
+
+
+
+
+
+
+            <p:commandButton value="Registrar" actionListener="#{CompraC.registrar()}" update="formFactura:Factura MostrarCompra:TabalaAgragar MostrarCompra:total mensaje"/>
+            <p:commandButton value="Limpiar" actionListener="#{CompraC.limpiar()}" update="MostrarCompra:TabalaAgragar MostrarCompra:total mensaje"/>
+            <p:commandButton value="Agregar" actionListener="#{CompraC.manuel()}" update="MostrarCompra:TabalaAgragar MostrarCompra:total mensaje"/>
+            <!--            <p:commandButton value="REgistar VentaDetalle" actionListener="{VentaC.registrarDetalle()}"/>-->
+
+
+
+            <h:form id="MostrarCompra">
+                <p:dataTable value="#{CompraC.listaVB}" id="TabalaAgragar" var="tblagragar">
+                    <p:column headerText="ID motos" >
+                        <h:outputText value="#{tblagragar.IDMOT}"  />
+                    </p:column>  
+                    <p:column headerText="Cantidad" >
+                        <h:outputText value="#{tblagragar.CANTCOMDET}"  />
+                    </p:column>
+                    <p:column headerText="subtotal" >
+                        <h:outputText value="#{tblagragar.subtotal}"  />
+                    </p:column> 
+                </p:dataTable>
+
+
+                <br/>
+                <br/>
+                <p:dataTable var="tblcom" id="tablcompra" value="#{CompraC.lstCompra}" rows="5" 
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="1,5,{ShowAll|'All'}" >
+                    <p:column headerText="ID compra" >
+                        <h:outputText value="#{tblcom.IDCOM}"  />
+                    </p:column>  
+                    <p:column headerText="ID proveedor." >
+                        <h:outputText value="#{tblcom.IDPRO}"  />
+                    </p:column>    
+                    <p:column headerText="ID empleado" >
+                        <h:outputText value="#{tblcom.IDEMP}"  />
+                    </p:column>  
+                    <p:column headerText="fecha de venta" >
+                        <h:outputText value="#{VentaC.venta.FECVEN}">
+                            <f:convertDateTime pattern="dd-MM-yyyy" locale="es"/>
+                        </h:outputText>
+                    </p:column>  
+                    <p:column headerText="froma de pago" >
+                        <h:outputText value="#{tblcom.FOR_PAG}"  />
+                    </p:column>
+
+                </p:dataTable>
+                <h:outputText value="total"/>
+                <h:outputText id="total" value="#{CompraC.total}"/>
+                <p:spacer width="40 px"/>
+
+
+
+
+
+            </h:form>
+
+
+        </center>
+    </h:body>
+</html>

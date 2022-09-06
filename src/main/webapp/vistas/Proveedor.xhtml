@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Facelet Title</title>
+
+        <f:event listener="#{ProveedorC.listar()}" type="preRenderView" /> 
+    </h:head>
+    <h:body >
+        <p:growl id="mensaje" severity="info, fatal" showDetail="true" showSummary="true" />
+        <p:growl id="growl-sticky" for="sticky-key" showDetail="true" showSummary="true" />
+
+        <p:menubar>
+            <p:submenu label="tablas maestras">
+                <p:menuitem value="cliente" outcome="Cliente"/>
+                <p:menuitem value="repuesto" outcome="Repuestos"/>
+                <p:menuitem value="Empleado" outcome="Empleado"/>
+                <p:menuitem value="Motos" outcome="Motos"/>
+                <p:menuitem value="Venta" outcome="Venta"/>
+                <p:menuitem value="Compra" outcome="Compra"/>
+                <p:menuitem value="Proveedor" outcome="Proveedor"/>
+            </p:submenu> 
+        </p:menubar>
+        <center>
+            <h1>Registro de Proveedor</h1>
+            <h:form id="cielo">
+                <p:panelGrid columns="2">
+
+                    <h:outputText value="Nombre"/>
+                    <p:inputText value="#{ProveedorC.pro.NOMPRO}" id="Nombre" required="true">
+                        <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                    </p:inputText>
+
+                    <h:outputText value="Ruc"/>
+                    <p:inputText value="#{ProveedorC.pro.RUCPRO}" id="Ruc" required="true" maxlength="11">
+                        <p:keyFilter regEx="/[0-9]/"/> 
+                    </p:inputText>
+
+                    <h:outputLabel value="Direccion"/>    
+                    <p:inputText value="#{ProveedorC.pro.DIRPRO}" id="Direccion" required="true">
+                        <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                    </p:inputText>
+
+                    <h:outputLabel value="Provincia"/>
+                    <p:inputText value="#{ProveedorC.pro.PROPRO}" id="Provincia" required="true">
+                        <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                    </p:inputText>
+
+                    <h:outputText value="Celular"/>
+                    <p:inputText value="#{ProveedorC.pro.CELPRO}" id="Celular" required="true" maxlength="9">
+                        <p:keyFilter regEx="/[0-9]/"/> 
+                    </p:inputText>
+                </p:panelGrid>
+
+            </h:form>
+            <p:commandButton value="Registrar" actionListener="#{ProveedorC.registrar()}" update=":MostrarProveedores:tablapro mensaje"/>
+            <p:commandButton value="Limpiar" actionListener="#{ProveedorC.limpiar()}" update=":cielo"/>
+            <h:form>
+                <center>
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/pdf.png" width="50px"/>
+                        <p:dataExporter type="pdf" target=":MostrarProveedores:tablapro" fileName="Listado de Proveedores" />
+                    </h:commandLink> 
+
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/exel.png" width="50px"/>
+                        <p:dataExporter type="xls" target=":MostrarProveedores:tablapro" fileName="Listado de Proveedores" />
+                    </h:commandLink>
+                </center>
+            </h:form>
+
+            <h:form id="MostrarProveedores">
+                <p:dataTable var="tblpro" id="tablapro" value="#{ProveedorC.listadoPro}" rows="5" 
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="1,5,{ShowAll|'All'}" >
+
+                    <p:column headerText="ID" >
+                        <h:outputText value="#{tblpro.IDPRO}"  />
+                    </p:column>  
+                    <p:column headerText="NOMBRE" >
+                        <h:outputText value="#{tblpro.NOMPRO}"  />
+                    </p:column>
+                    <p:column headerText="RUC" >
+                        <h:outputText value="#{tblpro.RUCPRO}"  />
+                    </p:column>
+                    <p:column headerText="DIRECCIÓN" >
+                        <h:outputText value="#{tblpro.DIRPRO}"  />
+                    </p:column>
+                    <p:column headerText="PROVINCIA" >
+                        <h:outputText value="#{tblpro.PROPRO}"  />
+                    </p:column>
+                    <p:column headerText="CELULAR" >
+                        <h:outputText value="#{tblpro.CELPRO}"  />
+                    </p:column>
+
+
+
+
+                    <p:column headerText="Modificar">
+                        <p:commandButton icon="ui-icon-pencil" oncomplete="PF('wdlgDatos').show();" update=":formModificar" >
+                            <f:setPropertyActionListener value="#{tblpro}" target="#{ProveedorC.pro}" />
+                        </p:commandButton>
+
+                    </p:column> 
+                    <p:column style="width: 100px" headerText="Eliminar">
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{ProveedorC.eliminar(tblpro)}" update="tablapro"  >
+                            <p:confirm header="Confirmación" message="¿Desea Eliminar?" icon="ui-icon-alert"/>
+                            <p:tooltip trackMouse="true"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                        </p:confirmDialog>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog header="Datos del Proveedor" widgetVar="wdlgDatos" id="dlgDatos">
+                <h:form id="formModificar">
+                    <p:panelGrid columns="2">
+
+
+                        <h:outputLabel value="Nombre"/>
+                        <p:inputText value="#{ProveedorC.pro.NOMPRO}" id="Nombre" required="true">
+                            <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                        </p:inputText>
+
+                        <h:outputLabel value="Ruc"/>
+                        <p:inputText value="#{ProveedorC.pro.RUCPRO}" id="Ruc" required="true">
+                            <p:keyFilter regEx="/[0-9]/"/> 
+                        </p:inputText>
+
+                        <h:outputLabel value="Direccion"/>    
+                        <p:inputText value="#{ProveedorC.pro.DIRPRO}" id="Direccion" required="true">
+                            <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                        </p:inputText>
+
+                        <h:outputLabel value="Provincia"/>
+                        <p:inputText value="#{ProveedorC.pro.PROPRO}" id="Provincia" required="true">
+                            <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                        </p:inputText>
+
+                        <h:outputLabel value="Celular"/>
+                        <p:inputText value="#{ProveedorC.pro.CELPRO}" id="Celular" required="true">
+                            <p:keyFilter regEx="/[0-9]/"/> 
+                        </p:inputText>
+
+                    </p:panelGrid>
+
+                    <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('wdlgDatos').hide();" actionListener="#{ProveedorC.limpiar()}" />
+                    <p:commandButton id="modicardialog" value="Modificar" actionListener="#{ProveedorC.modificar()}" 
+                                     update="formModificar :MostrarProveedores:tablapro" 
+                                     oncomplete="if(!args.validationFailed)PF('wdlgDatos').hide();"/>
+
+                </h:form>
+            </p:dialog>
+        </center>
+    </h:body>
+</html>

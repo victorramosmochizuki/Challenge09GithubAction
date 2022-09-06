@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Facelet Title</title>
+
+        <f:event listener="#{MotosC.listar()}" type="preRenderView" /> 
+    </h:head>
+    <h:body >
+        <p:growl id="mensaje" severity="info, fatal" showDetail="true" showSummary="true" />
+        <p:growl id="growl-sticky" for="sticky-key" showDetail="true" showSummary="true" />
+
+        <p:menubar>
+            <p:submenu label="tablas maestras">
+                <p:menuitem value="cliente" outcome="Cliente"/>
+                <p:menuitem value="repuesto" outcome="Repuestos"/>
+                <p:menuitem value="Empleado" outcome="Empleado"/>
+                <p:menuitem value="Motos" outcome="Motos"/>
+                <p:menuitem value="Venta" outcome="Venta"/>
+                <p:menuitem value="Compra" outcome="Compra"/>
+                <p:menuitem value="Proveedor" outcome="Proveedor"/>
+            </p:submenu> 
+        </p:menubar>
+        <center>
+            <h1>Registro de Motos</h1>
+            <h:form id="dan">
+                <p:panelGrid columns="2">
+
+                    <h:outputText value="Categoria"/>
+                    <p:inputText value="#{MotosC.mot.CATMOT}" id="Codigo" required="true">
+                        <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                    </p:inputText>
+
+
+                    <h:outputLabel value="Marca"/>    
+                    <p:inputText value="#{MotosC.mot.MARMOT}" id="Nombre" required="true">
+                        <p:keyFilter regEx="/[a-z-A-Z- ]/"/>
+                    </p:inputText>
+
+                    <h:outputLabel value="Modelo"/>
+                    <p:inputText value="#{MotosC.mot.MODMOT}" id="Marca" required="true">
+
+                    </p:inputText>
+
+                    <h:outputText value="Color"/>
+                    <p:inputText value="#{MotosC.mot.COLMOT}" id="Descripcion" required="true">
+                        <p:keyFilter regEx="/[a-zA-Z0-9-. ]/"/>
+                    </p:inputText>
+
+
+                    <h:outputText value="Garantia"/>
+                    <p:inputText value="#{MotosC.mot.GARMOT}" id="PrecioCompra" required="true">
+                        <p:keyFilter regEx="/^[a-zA-Z0-9 ñ]*$/"/>
+                    </p:inputText>
+
+
+                    <h:outputLabel   id="precio" for="precio" value="PRECIO COMPRA" />  
+                    <p:inputNumber style="width: 230px"
+                                   value="#{MotosC.mot.PRECOMMOT}" id="compras"
+                                   maxlength="5"
+                                   required="true" requiredMessage="Falta ingresar el Precio">
+                        <p:keyFilter regEx="/[0-9]/" />
+                        <p:tooltip for="compras" value="Ingrese  el precio de la compra" trackMouse="focus"/>
+                    </p:inputNumber>
+
+                    <h:outputLabel for="precio" value="PRECIO DE VENTA " />  
+                    <p:inputNumber style="width: 230px" value="#{MotosC.mot.PREVENMOT}" id="venta" 
+                                   maxlength="5"
+                                   required="true" requiredMessage="Falta ingresar el Precio">
+                        <p:keyFilter regEx="/[0-9]/" />
+                        <p:tooltip for="venta" value="Ingrese  el precio de la venta" trackMouse="focus"/>
+                    </p:inputNumber>
+
+                    <h:outputLabel value="Stock" />
+                    <p:inputText value="#{MotosC.mot.STOCK}" 
+                                 required="true" requiredMessage="Falta STOCK"
+                                 id="STOCK">
+                        <p:keyFilter regEx="/[0-9]/"/>                 
+                        <p:tooltip for="STOCK" value="Ingresa el STOCK" trackMouse="focus"/>     
+                    </p:inputText>   
+
+                </p:panelGrid>
+
+            </h:form>
+            <p:commandButton value="Registrar" actionListener="#{MotosC.registrar()}" update=":MostrarMotos:tablamot mensaje"/>
+            <p:commandButton value="Limpiar" actionListener="#{MotosC.limpiar()}" update=":dan"/>
+            <h:form>
+                <center>
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/pdf.png" width="50px"/>
+                        <p:dataExporter type="pdf" target=":MostrarMotos:tablamot" fileName="Listado de Motos" />
+                    </h:commandLink> 
+
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/exel.png" width="50px"/>
+                        <p:dataExporter type="xls" target=":MostrarMotos:tablamot" fileName="Listado de Motos" />
+                    </h:commandLink>
+                    <p:commandButton value="Exportar Clientes" icon="fa fa-fx fa-dowload" styleClass="" ajax="false"
+                                     style="float:right; background-color: yellowgreen" actionListener="#{MotosC.reporteMotos()}"
+                                     onclick="this.form.target = '_blank'" title="Relacion de Clientes"
+                                     />
+                </center>
+            </h:form>
+
+            <h:form id="MostrarMotos">
+                <p:dataTable var="tblmot" id="tablamot" value="#{MotosC.listadoMot}" rows="5" 
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="1,5,{ShowAll|'All'}" >
+
+                    <p:column headerText="ID" >
+                        <h:outputText value="#{tblmot.IDMOT}"  />
+                    </p:column>  
+                    <p:column headerText="Categoria." >
+                        <h:outputText value="#{tblmot.CATMOT}"  />
+                    </p:column>    
+                    <p:column headerText="Marca" >
+                        <h:outputText value="#{tblmot.MARMOT}"  />
+                    </p:column>  
+                    <p:column headerText="Modelo" >
+                        <h:outputText value="#{tblmot.MODMOT}"  />
+                    </p:column>
+                    <p:column headerText="Color" >
+                        <h:outputText value="#{tblmot.COLMOT}"  />
+                    </p:column>
+                    <p:column headerText="Garantia" >
+                        <h:outputText value="#{tblmot.GARMOT}"  />
+                    </p:column>
+                    <p:column headerText="Precio Compra" >
+                        <h:outputText value="#{tblmot.PRECOMMOT}"  />
+                    </p:column> 
+                    <p:column headerText="Precio Venta" >
+                        <h:outputText value="#{tblmot.PREVENMOT}"  />
+                    </p:column> 
+                    <p:column headerText="STOCK" >
+                        <h:outputText value="#{tblmot.STOCK}"  />
+                    </p:column>  
+
+
+
+                    <p:column headerText="Modificar">
+                        <p:commandButton icon="ui-icon-pencil" oncomplete="PF('wdlgDatos').show();" update=":formModificar" >
+                            <f:setPropertyActionListener value="#{tblmot}" target="#{MotosC.mot}" />
+                        </p:commandButton>
+
+                    </p:column> 
+                    <p:column style="width: 100px" headerText="Eliminar">
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{MotosC.eliminar(tblmot)}" update="tablamot"  >
+                            <p:confirm header="Confirmación" message="¿Desea Eliminar?" icon="ui-icon-alert"/>
+                            <p:tooltip trackMouse="true"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                        </p:confirmDialog>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog header="Datos de la Motos" widgetVar="wdlgDatos" id="dlgDatos">
+                <h:form id="formModificar">
+                    <p:panelGrid columns="2">
+
+                        <h:outputText value="Categoria"/>
+                        <p:inputText value="#{MotosC.mot.CATMOT}" id="Codigo" required="true">
+                            <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                        </p:inputText>
+
+
+                        <h:outputLabel value="Marca"/>    
+                        <p:inputText value="#{MotosC.mot.MARMOT}" id="Nombre" required="true">
+                            <p:keyFilter regEx="/[a-z-A-Z- ]/"/>
+                        </p:inputText>
+
+                        <h:outputLabel value="Modelo"/>
+                        <p:inputText value="#{MotosC.mot.MODMOT}" id="Marca" required="true">
+                            <p:keyFilter regEx="/^[a-zA-Z0-9]*$/"/>
+                        </p:inputText>
+
+                        <h:outputText value="Color"/>
+                        <p:inputText value="#{MotosC.mot.COLMOT}" id="Descripcion" required="true">
+                            <p:keyFilter regEx="/[a-zA-Z0-9-. ]/"/>
+                        </p:inputText>
+
+
+                        <h:outputText value="Garantia"/>
+                        <p:inputText value="#{MotosC.mot.GARMOT}" id="PrecioCompra" required="true">
+                            <p:keyFilter regEx="/^[a-zA-Z0-9]*$/"/>
+                        </p:inputText>
+
+
+                        <h:outputLabel   id="precio" for="precio" value="PRECIO COMPRA" />  
+                        <p:inputNumber style="width: 230px"
+                                       value="#{MotosC.mot.PRECOMMOT}" id="compras"
+                                       maxlength="5"
+                                       required="true" requiredMessage="Falta ingresar el Precio">
+                            <p:keyFilter regEx="/[0-9]/" />
+                            <p:tooltip for="compras" value="Ingrese  el precio de la compra" trackMouse="focus"/>
+                        </p:inputNumber>
+
+                        <h:outputLabel for="precio" value="PRECIO DE VENTA " />  
+                        <p:inputNumber style="width: 230px" value="#{MotosC.mot.PREVENMOT}" id="venta" 
+                                       maxlength="5"
+                                       required="true" requiredMessage="Falta ingresar el Precio">
+                            <p:keyFilter regEx="/[0-9]/" />
+                            <p:tooltip for="venta" value="Ingrese  el precio de la venta" trackMouse="focus"/>
+                        </p:inputNumber>
+
+                        <h:outputLabel value="Stock" />
+                        <p:inputText value="#{MotosC.mot.STOCK}" 
+                                     required="true" requiredMessage="Falta STOCK"
+                                     id="STOCK">
+                            <p:keyFilter regEx="/[0-9]/"/>                 
+                            <p:tooltip for="STOCK" value="Ingresa el STOCK" trackMouse="focus"/>     
+                        </p:inputText>   
+
+                    </p:panelGrid>
+
+                    <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('wdlgDatos').hide();" actionListener="#{MotosC.limpiar()}" />
+                    <p:commandButton id="modicardialog" value="Modificar" actionListener="#{MotosC.modificar()}" 
+                                     update="formModificar :MostrarMotos:tablamot" 
+                                     oncomplete="if(!args.validationFailed)PF('wdlgDatos').hide();"/>
+
+                </h:form>
+            </p:dialog>
+        </center>
+    </h:body>
+</html>

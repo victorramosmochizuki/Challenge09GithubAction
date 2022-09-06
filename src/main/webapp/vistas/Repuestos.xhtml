@@ -1,0 +1,263 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+    <h:head>
+        <title>Facelet Title</title>
+        <f:event listener="#{RepuestosC.listar()}" type="preRenderView" /> 
+
+    </h:head>
+    <h:body >
+
+        <p:menubar>
+            <p:submenu label="tablas maestras">
+                <p:menuitem value="cliente" outcome="Cliente"/>
+                <p:menuitem value="repuesto" outcome="Repuestos"/>
+                <p:menuitem value="Empleado" outcome="Empleado"/>
+                <p:menuitem value="Motos" outcome="Motos"/>
+                <p:menuitem value="Venta" outcome="Venta"/>
+                <p:menuitem value="Compra" outcome="Compra"/>
+                <p:menuitem value="Proveedor" outcome="Proveedor"/>
+            </p:submenu> 
+        </p:menubar>
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces" />
+
+        <center>
+            <h1>Registro de Repuestos</h1>
+            <!--Manda msj al costado-->
+            <p:growl id="mensaje" showDetail="true" />
+
+
+
+            <h:form id="apolo">
+
+
+
+                <p:panelGrid>
+                    <p:row>
+
+
+                        <p:column>
+                            <h:outputLabel value="Nombre"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{RepuestosC.rep.NOMREP}" id="codigo" required="true" requiredMessage="Falta Ruc">
+
+                                <p:ajax update="msgRuc" event="keyup"/> 
+
+                                <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                            </p:inputText>
+                        </p:column>
+
+                        <p:message for="codigo" id="msgRuc" display="text" />
+                    </p:row>
+                    <p:row>
+
+
+                        <p:column>
+                            <h:outputLabel value="Marca"/> 
+                        </p:column>
+
+                        <p:column>
+                            <p:inputText value="#{RepuestosC.rep.MARREP}" id="Nombre" required="true">
+                                <p:keyFilter regEx="/[a-z-A-Z- ]/"/>
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+
+
+                        <p:column>
+                            <h:outputLabel value="Modelo"/>
+                        </p:column>
+
+                        <p:column>
+                            <p:inputText value="#{RepuestosC.rep.MODREP}" id="Marca" required="true">
+
+                            </p:inputText>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+
+
+                        <p:column>
+                            <h:outputLabel value="Stock" />
+
+                        </p:column>
+
+
+                        <p:column>
+                            <p:inputText value="#{RepuestosC.rep.STOCK}" 
+                                         required="true" requiredMessage="Falta STOCK"
+                                         id="STOCK">
+                                <p:keyFilter regEx="/[0-9]/"/>                 
+                                <p:tooltip for="STOCK" value="Ingresa el STOCK" trackMouse="focus"/>     
+                            </p:inputText>  
+                        </p:column>
+                    </p:row>
+                    <p:row>
+
+
+                        <p:column>
+                            <h:outputLabel   id="precio" for="precio" value="PRECIO COMPRA" />  
+                        </p:column>
+
+                        <p:column>
+                            <p:inputNumber style="width: 230px"
+                                           value="#{RepuestosC.rep.PRECOMREP}" id="compras"
+                                           maxlength="5"
+                                           required="true" requiredMessage="Falta ingresar el Precio">
+                                <p:keyFilter regEx="/[0-9]/" />
+                                <p:tooltip for="compras" value="Ingrese  el precio de la compra" trackMouse="focus"/>
+                            </p:inputNumber>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+
+
+                        <p:column>
+                            <h:outputLabel for="precio" value="PRECIO DE VENTA " /> 
+                        </p:column>
+
+                        <p:column>
+
+                            <p:inputNumber style="width: 230px" value="#{RepuestosC.rep.PREVENREP}" id="venta" 
+                                           maxlength="5"
+                                           required="true" requiredMessage="Falta ingresar el Precio">
+                                <p:keyFilter regEx="/[0-9]/" />
+                                <p:tooltip for="venta" value="Ingrese  el precio de la venta" trackMouse="focus"/>
+                            </p:inputNumber>
+                        </p:column>
+                    </p:row>
+
+
+
+
+                </p:panelGrid>
+            </h:form>
+            <p:commandButton value="Registrar" actionListener="#{RepuestosC.registrar()}" update=":MostrarRepuestos:tablarep :mensaje"/>
+            <p:commandButton value="Limpiar" actionListener="#{RepuestosC.limpiar()}" update="apolo"/>
+            <h:form>
+                <center>
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/pdf.png" width="50px"/>
+                        <p:dataExporter type="pdf" target=":MostrarRespuestos:tablarep" fileName="Listado de Repuestos" />
+                    </h:commandLink> 
+
+                    <h:commandLink>
+                        <h:graphicImage url="/logo/exel.png" width="50px"/>
+                        <p:dataExporter type="xls" target=":MostrarRepuestos:tablarep" fileName="Listado de Repuestos" />
+                    </h:commandLink>
+                </center>
+            </h:form>
+
+            <h:form id="MostrarRepuestos">
+                <p:dataTable var="tblrep" id="tablarep" value="#{RepuestosC.listadoRep}" rows="5" 
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="1,5,{ShowAll|'All'}" >
+                    <p:column headerText="ID" >
+                        <h:outputText value="#{tblrep.IDREP}"  />
+                    </p:column>  
+                    <p:column headerText="Nombre" >
+                        <h:outputText value="#{tblrep.NOMREP}"  />
+                    </p:column>    
+                    <p:column headerText="Marca" >
+                        <h:outputText value="#{tblrep.MARREP}"  />
+                    </p:column>  
+                    <p:column headerText="Modelo" >
+                        <h:outputText value="#{tblrep.MODREP}"  />
+                    </p:column>  
+                    <p:column headerText="STOCK" >
+                        <h:outputText value="#{tblrep.STOCK}"  />
+                    </p:column>  
+
+                    <p:column headerText="Precio Compra" >
+                        <h:outputText value="#{tblrep.PRECOMREP}"  />
+                    </p:column>  
+                    <p:column headerText="Precio Venta" >
+                        <h:outputText value="#{tblrep.PREVENREP}"  />
+                    </p:column> 
+
+                    <p:column headerText="Modificar">
+                        <p:commandButton icon="ui-icon-pencil" oncomplete="PF('wdlgDatos').show();" update=":formModificar" >
+                            <f:setPropertyActionListener value="#{tblrep}" target="#{RepuestosC.rep}" />
+                        </p:commandButton>
+
+                    </p:column> 
+                    <p:column style="width: 100px" headerText="Eliminar">
+
+                        <p:commandButton icon="ui-icon-trash" actionListener="#{RepuestosC.eliminar(tblrep)}" update="tablarep"  >
+                            <p:confirm header="Confirmación" message="¿Desea Eliminar?" icon="ui-icon-alert"/>
+                            <p:tooltip trackMouse="true"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                        </p:confirmDialog>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog header="Datos del Cliente" widgetVar="wdlgDatos" id="dlgDatos">
+                <h:form id="formModificar">
+                    <p:panelGrid columns="2">
+
+                        <h:outputText value="Nombre"/>
+                        <p:inputText value="#{RepuestosC.rep.NOMREP}" id="Codigo" required="true">
+                            <p:keyFilter regEx="/[A-z_ñ_á_é_í_ó_ú_Á_É_Í_Ó_Ú_' ']/" />
+                        </p:inputText>
+
+
+                        <h:outputLabel value="Marca"/>    
+                        <p:inputText value="#{RepuestosC.rep.MARREP}" id="Nombre" required="true">
+                            <p:keyFilter regEx="/[a-z-A-Z- ]/"/>
+                        </p:inputText>
+
+                        <h:outputLabel value="Modelo"/>
+                        <p:inputText value="#{RepuestosC.rep.MODREP}" id="Marca" required="true">
+                            <p:keyFilter regEx="/^[a-zA-Z0-9]*$/"/>
+                        </p:inputText>
+
+                        <h:outputLabel value="Stock" />
+                        <p:inputText value="#{RepuestosC.rep.STOCK}" 
+                                     required="true" requiredMessage="Falta STOCK"
+                                     id="STOCK">
+                            <p:keyFilter regEx="/[0-9]/"/>                 
+                            <p:tooltip for="STOCK" value="Ingresa el STOCK" trackMouse="focus"/>     
+                        </p:inputText>   
+
+
+                        <h:outputLabel   id="precio" for="precio" value="PRECIO COMPRA" />  
+                        <p:inputNumber style="width: 230px"
+                                       value="#{RepuestosC.rep.PRECOMREP}" id="compras"
+                                       maxlength="5"
+                                       required="true" requiredMessage="Falta ingresar el Precio">
+                            <p:keyFilter regEx="/[0-9]/" />
+                            <p:tooltip for="compras" value="Ingrese  el precio de la compra" trackMouse="focus"/>
+                        </p:inputNumber>
+
+                        <h:outputLabel for="precio" value="PRECIO DE VENTA " />  
+                        <p:inputNumber style="width: 230px" value="#{RepuestosC.rep.PREVENREP}" id="venta" 
+                                       maxlength="5"
+                                       required="true" requiredMessage="Falta ingresar el Precio">
+                            <p:keyFilter regEx="/[0-9]/" />
+                            <p:tooltip for="venta" value="Ingrese  el precio de la venta" trackMouse="focus"/>
+                        </p:inputNumber>
+
+
+                    </p:panelGrid>
+                    <p:commandButton value="Cancelar" immediate="true" oncomplete="PF('wdlgDatos').hide();" actionListener="#{RepuestosC.limpiar()}" />
+                    <p:commandButton id="modicardialog" value="Modificar" actionListener="#{RepuestosC.modificar()}" 
+                                     update="formModificar :MostrarRepuestos:tablarep" 
+                                     oncomplete="if(!args.validationFailed)PF('wdlgDatos').hide();"/>
+
+                </h:form>
+            </p:dialog>
+        </center>
+    </h:body>
+</html>
